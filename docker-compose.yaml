@@ -1,0 +1,27 @@
+version: '3'
+services:
+  h2-database:
+    image: "oscarfonts/h2:latest"
+    container_name: h2-db
+    ports:
+      - "9092:9092"
+    environment:
+      - H2_TCP_PORT=9092
+      - H2_WEB_PORT=8082
+      - H2_DATA_DIR=/data/h2
+
+  bank-app:
+    build:
+      context: /app
+      dockerfile: Dockerfile
+    container_name: bank-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - h2-database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:h2://h2-database:9092/mydb
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
+      - SPRING_DATASOURCE_USERNAME=sa
+      - SPRING_DATASOURCE_PASSWORD=sa
+
